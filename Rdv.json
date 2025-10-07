@@ -1,0 +1,249 @@
+{
+  "name": "Rdv",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "RDV form",
+        "formDescription": "get an appointment to our clinique",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "name",
+              "placeholder": "name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "LastName",
+              "placeholder": "LastName",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "email",
+              "fieldType": "email",
+              "placeholder": "email"
+            },
+            {
+              "fieldLabel": "date",
+              "fieldType": "date"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -608,
+        -80
+      ],
+      "id": "e7cb7320-5270-45fe-aa4f-681b28ff49f1",
+      "name": "On form submission",
+      "webhookId": "35219fa3-a5d5-4809-83ba-45cc25f3714b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.RDv }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent responsible for scheduling, managing, and confirming meetings based on provided JSON data.\n\n## Context\n- The agent receives meeting details in JSON format.\n- Each meeting (RDv) contains attributes such as name, last name, email, date, start time, end time, and title.\n- The agent should extract this information and schedule the meeting in a structured, human-readable confirmation message.\n- The system must handle multiple JSON objects if more than one meeting is provided.\n\n## Instructions\n1. Parse the provided JSON input.\n2. Extract the following details:\n   - First Name\n   - Last Name\n   - Email\n   - Date\n   - Start Time\n   - End Time\n   - Title\n3. Convert the data into a formatted meeting confirmation response.\n4. Validate that the meeting date and time are in the future.\n5. Return a confirmation message summarizing all meeting details.\n6. If data is missing or invalid, return an error message specifying the issue.\n\n## Tools\n- JSON Parser\n- Calendar Scheduling API\n- Email Notification API (optional for sending confirmations)\n\n## Examples\n### Example Input\n[\n{\n\"RDv\": {\n\"name\": \"wael\",\n\"lastName\": \"slama\",\n\"email\": \"wael.slama.issat@gmail.com\n\",\n\"date\": \"2025-10-06\",\n\"starttime\": \"08:10\",\n\"endtime\": \"08:40\",\n\"title\": \"appointment\"\n}\n}\n]\n\n### Example Output\nMeeting Confirmation:\nTitle: appointment\nParticipant: wael slama\nEmail: wael.slama.issat@gmail.com\n\nDate: 2025-10-06\nTime: 08:10 - 08:40\nStatus: Meeting successfully scheduled.\nMeeting Confirmation:\nTitle: appointment\nParticipant: wael slama\nEmail: wael.slama.issat@gmail.com\n\nDate: 2025-10-06\nTime: 08:10 - 08:40\nStatus: Meeting successfully scheduled.\n\n### Example Error Output\nError: Invalid date or missing field in JSON data.\nPlease ensure all fields (name, email, date, starttime, endtime, title) are provided correctly.\n\n## SOP (Standard Operating Procedure)\n1. Receive JSON input.\n2. Parse and validate all required fields.\n3. Check if the meeting date is valid and in the future.\n4. Format the confirmation message.\n5. Optionally store the meeting in a calendar system or send a confirmation email.\n6. Return a structured confirmation or error response.\n\n## Final Notes\n- Dates must follow the format YYYY-MM-DD.\n- Time must use the 24-hour format (HH:MM).\n- Ensure all scheduled meetings are stored to avoid double-booking.\n- The agent should be able to handle multiple meetings in a single request.\n---\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "ca66ab93-8a90-4c7c-81ef-172a0f2fd2eb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "waelslama39@gmail.com",
+          "mode": "list",
+          "cachedResultName": "waelslama39@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": []
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        176
+      ],
+      "id": "6299eb79-6073-40bf-9591-09300e889cb2",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jacgR8TTUUpRfFfL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"RDv\": {\n    \"name\": \"{{$json.name}}\",\n    \"lastName\": \"{{$json.LastName}}\",\n    \"email\": \"{{$json.email}}\",\n    \"date\": \"{{$json.date}}\",\n    \"starttime\": \"{{$json.starttime}}\",\n    \"endtime\": \"{{$json.endtime}}\",\n    \"title\": \"{{$json.title}}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "596428c7-fbba-40a0-810b-5469b3ba53f3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        80
+      ],
+      "id": "8bcc5c3e-139e-433b-bb3f-434ceff26981",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "BT63m5dzfs6Nk4Ij",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "waelslama39@gmail.com",
+          "mode": "list",
+          "cachedResultName": "waelslama39@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        128
+      ],
+      "id": "91f95a80-c64c-4434-a988-7cb184b1dad1",
+      "name": "Create an event in Google Calendar1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "jacgR8TTUUpRfFfL",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "name": "wael",
+          "LastName": "slama",
+          "email": "wael.slama.issat@gmail.com",
+          "date": "2025-10-06",
+          "submittedAt": "2025-10-05T18:31:31.909+01:00",
+          "starttime": "10:00",
+          "endtime": "10:30",
+          "title": "test",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Edit Fields": [
+      {
+        "json": {
+          "RDv": {
+            "name": "wael",
+            "lastName": "slama",
+            "email": "wael.slama.issat@gmail.com",
+            "date": "2025-10-06",
+            "starttime": "08:10",
+            "endtime": "08:40",
+            "title": "appointment"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bd1b7cc7-2865-49d6-bba7-31ae02363164",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1bbf83f4a73ec9fbe9faaf754f95a0e488fcee31e59655d047433137c0716e84"
+  },
+  "id": "FM9cTUV7Kex29X4n",
+  "tags": []
+}
