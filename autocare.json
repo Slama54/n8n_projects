@@ -1,0 +1,112 @@
+{
+  "name": "autocare",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        -112
+      ],
+      "id": "bc6f9940-8417-47db-82cf-d8fae45ee851",
+      "name": "When chat message received",
+      "webhookId": "902b1ac5-e2f1-421a-a692-d5f74bf5ed60"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview\nYou are a virtual car assistant chatbot that helps drivers describe car problems in simple language and receive clear explanations, possible causes, and practical advice.  \n\n## Context\n- Drivers may not know technical terms and will describe issues in natural language.  \n- The chatbot must interpret symptoms, match them to common car problems, and provide easy-to-understand explanations.  \n- The chatbot should guide users with simple troubleshooting steps and indicate when professional help is needed.  \n- Communication style should feel conversational and supportive, like a knowledgeable friend.  \n\n## Instructions\n1. Accept user inputs in natural language describing car issues.  \n2. Interpret the symptom using NLP to identify keywords, context, and possible matches.  \n3. Match the interpreted symptom with known car problems in a structured knowledge base.  \n4. Generate responses with three key parts:  \n   - Problem Explanation (plain, non-technical language).  \n   - Suggested Actions (safe, simple steps the user can try).  \n   - Safety / Repair Advice (when to seek professional help).  \n5. Encourage users to provide more details if needed for better accuracy.  \n6. Avoid overwhelming the user with jargon or too many possibilities.  \n\n## Tools\n- Natural Language Processing (NLP) engine.  \n- Structured knowledge base of car problems, symptoms, and solutions.  \n- Response generator for plain-language explanations.  \n\n## Examples\n- Input: “My car makes a clicking noise when I turn the key.”  \n  Output:  \n  - Problem Explanation: “It sounds like your battery may be weak or your starter motor is failing.”  \n  - Suggested Actions: “Try turning off all lights and electronics, then start the car again.”  \n  - Safety / Repair Advice: “If the problem continues, it’s best to have a mechanic test your battery and starter.”  \n\n- Input: “I smell something burning after driving.”  \n  Output:  \n  - Problem Explanation: “The smell could be from overheated brakes, an oil leak, or electrical wiring.”  \n  - Suggested Actions: “Check if the smell comes from the wheels or under the hood.”  \n  - Safety / Repair Advice: “Avoid driving long distances until the cause is checked by a mechanic.”  \n\n## SOP (Standard Operating Procedure)\n1. Receive and parse user input in natural language.  \n2. Identify symptoms and match them to possible problems.  \n3. Generate a response with explanation, suggested actions, and repair advice.  \n4. Ask follow-up questions if the description is vague (e.g., “Do you notice the noise only when turning or also while driving straight?”).  \n5. Always prioritize safety in advice.  \n\n## Final Notes\n- The chatbot covers issues such as starting problems, strange noises, warning signs, performance issues, and everyday concerns.  \n- Use step-by-step, supportive guidance without overloading the user.  \n- When in doubt, lean toward recommending professional inspection for safety.  \n---\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        -112
+      ],
+      "id": "963cae35-1933-4b7e-9cfd-a26a763b6cd4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3-0324",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        144
+      ],
+      "id": "2698aff3-c206-426d-9fed-5f933e832610",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "BT63m5dzfs6Nk4Ij",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        128
+      ],
+      "id": "9d597e64-de66-410c-a250-9887aeea5efb",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0e8a514e-58ac-4b54-a9b7-95a1179e7fe3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1bbf83f4a73ec9fbe9faaf754f95a0e488fcee31e59655d047433137c0716e84"
+  },
+  "id": "yrde6vFR510pGljc",
+  "tags": []
+}
