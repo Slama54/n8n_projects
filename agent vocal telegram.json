@@ -71,7 +71,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        400,
+        176,
         -32
       ],
       "id": "f59e632c-2b09-4b08-a777-e04b82d6b15e",
@@ -108,7 +108,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        640,
+        336,
         -32
       ],
       "id": "d74baec5-d7a6-4f3f-9a29-5aff8fbafc5f",
@@ -135,14 +135,260 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        864,
+        496,
         -32
       ],
       "id": "bb729c19-6bdb-4e21-aa7e-944aee0240e0",
       "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "content": "## voice to text  \n",
+        "height": 256,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "77c89d26-4280-4ba2-891e-d61d061c0767",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant who is extremely funny."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        -32
+      ],
+      "id": "1108c920-ada8-4f69-a3fe-f229f6404b36",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        688,
+        192
+      ],
+      "id": "367dacca-79f8-4c03-9cef-11c2a4803f8c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "BT63m5dzfs6Nk4Ij",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://qwen-qwen-tts-demo.hf.space/gradio_api/call/predict",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"data\": [ $json.output, \"Dylan\" ] } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1056,
+        -32
+      ],
+      "id": "5319d0dd-3690-4ab5-ba32-60f8813e2c92",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "=https://qwen-qwen-tts-demo.hf.space/gradio_api/call/predict/{{ $json.event_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1264,
+        -32
+      ],
+      "id": "3a877605-fde7-45c8-b476-ff349ba4dcee",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        128
+      ],
+      "id": "076c6127-45a7-4469-8460-b04148c3fcf9",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "BT63m5dzfs6Nk4Ij",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "url",
+              "description": "the url of the vice data ",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        -32
+      ],
+      "id": "ffde46ff-ad3d-4d9c-a670-3496b971875d",
+      "name": "Url Extractor"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.output.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        -32
+      ],
+      "id": "6f85b9b9-0d64-47f1-b135-a17f6a1f20f9",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {
+          "title": "response_audio"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1952,
+        -16
+      ],
+      "id": "8b936982-c4c4-46f7-8d41-e90d20e09142",
+      "name": "Send an audio file",
+      "webhookId": "0a22f4f8-0482-44d1-b6e9-ca649bf27af0",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bfpea2AuShynOwyr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2128,
+        0
+      ],
+      "id": "93048c4c-ec97-4f3c-a397-bf7bc2d7db98",
+      "name": "Send a text message",
+      "webhookId": "0a22f4f8-0482-44d1-b6e9-ca649bf27af0",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bfpea2AuShynOwyr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Text to speech\n",
+        "height": 512,
+        "width": 928,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        976,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "36b01142-bda9-4c84-9911-8e94cf594697",
+      "name": "Sticky Note1"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 360226754,
+          "message": {
+            "message_id": 29,
+            "from": {
+              "id": 6835483360,
+              "is_bot": false,
+              "first_name": "Wael",
+              "last_name": "Slama",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 6835483360,
+              "first_name": "Wael",
+              "last_name": "Slama",
+              "type": "private"
+            },
+            "date": 1759519154,
+            "voice": {
+              "duration": 8,
+              "mime_type": "audio/ogg",
+              "file_id": "AwACAgQAAxkBAAMdaOAhsne-AAHJUEK1XTWh6HilckGYAAJfHAACfdgBU5fU7WPMmB4SNgQ",
+              "file_unique_id": "AgADXxwAAn3YAVM",
+              "file_size": 168587
+            }
+          }
+        }
+      }
+    ]
+  },
   "connections": {
     "Telegram Trigger": {
       "main": [
@@ -187,13 +433,117 @@
           }
         ]
       ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Url Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Url Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Url Extractor": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Send an audio file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Send an audio file": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f9555ec9-814c-41e2-89bc-0f30826037de",
+  "versionId": "4cf3206c-f6ff-4e2c-be96-37b25d06c971",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "1bbf83f4a73ec9fbe9faaf754f95a0e488fcee31e59655d047433137c0716e84"
