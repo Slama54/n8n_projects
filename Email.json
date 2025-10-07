@@ -1,0 +1,830 @@
+{
+  "name": "Email",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When chat message received').item.json.chatInput }}",
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent responsible for drafting professional Gmail emails in HTML format on behalf of Wael Slama. Each email introduces Wael, expresses motivation for the opportunity, and clearly mentions that the CV and motivation letter are attached. Additionally, the agent must detect whether the opportunity is for **Volunteering** or **Work**. The final email text will be passed to a Gmail node for sending.\n\n## Context\n- Wael Slama applies to different opportunities (jobs, volunteering, academic programs).  \n- Applications always include attachments: CV and motivation letter.  \n- The AI agent must generate a polite and professional email tailored to the opportunity.  \n- Input is the opportunity description (organization name, role, program, etc.).  \n- Output must be valid HTML with inline styles (email-safe), including subject line, body, and opportunity type.\n\n## Instructions\n1. Accept the opportunity description as input.\n2. Detect the opportunity type:\n   - If it is a volunteering project (ESC, NGO, youth program, etc.), set \\`Type\\` to \"Volunteering\".  \n   - If it is a job, internship, or professional role, set \\`Type\\` to \"Work\".\n3. Draft the Gmail with two parts:\n   - **Subject line**: \"Application for [Opportunity Title / Program].\"  \n   - **Body**:  \n     - Greeting: Address the organization/team politely (e.g., \"Dear [Organization/Team],\")  \n     - Introduction: Introduce Wael briefly (name, nationality, relevant detail if useful)  \n     - Motivation: Summarize why Wael applies and link his profile to the opportunity  \n     - Relevance: Mention education, work experience, or associative background relevant to the role  \n     - Attachments: Clearly state that CV and motivation letter are attached  \n     - Closing: Thank them for their consideration and express interest  \n     - Signature: Include Wael's contact details  \n4. Keep the email concise (around 200–300 words).  \n5. The email body must complement the motivation letter, not repeat it.  \n6. Output **only a structured JSON object** with the following format:\n\n\\`\\`\\`json\n{\n  \"Type\": \"Volunteering or Work\",\n  \"Subject\": \"Email subject here\",\n  \"Body\": \"<html>HTML email here</html>\"\n}\n\\`\\`\\`\n\n7. Use <p> tags for paragraphs and inline \\`style=\"...\"` for fonts, line-height, and colors.  \n8. Do not include any extra text outside the JSON.\n\n## Tools\n- Pinecone Vector Database (to retrieve Wael's relevant profile data)  \n- Text generation model (to draft the email)  \n\n## Examples\n- Input: \"ESC Volunteering project at Lycée Jean Moulin, Saint Brieuc (FDMJC22 Team).\"  \n- Output:\n\\`\\`\\`json\n{\n  \"Type\": \"Volunteering\",\n  \"Subject\": \"Application for ESC Volunteering Project at Lycée Jean Moulin\",\n  \"Body\": \"<html>\\n  <body style=\\\\\"font-family:Arial, sans-serif; line-height:1.6; font-size:14px; color:#111;\\\\\">\\n    <p>Dear FDMJC22 Team,</p>\\n    <p>I hope this message finds you well.</p>\\n    <p>My name is <strong>Wael Slama</strong>, and I am writing to express my strong motivation to join the ESC volunteering project at Lycée Jean Moulin in Saint Brieuc. Being 25 years old, I bring maturity, responsibility, and strong motivation to contribute meaningfully.</p>\\n    <p>Through my involvement in the Tunisian Scouts, IEEE RAS Chapter, and Siyanet El Medina Monastir, I gained valuable experience in organizing workshops, supporting youth activities, and promoting civic engagement. With my academic background in Electronics, Computer Science, Artificial Intelligence, and Software Engineering, I also developed strong skills in communication, event organization, and digital tools.</p>\\n    <p>I am particularly inspired by the opportunity to raise awareness about citizenship, solidarity, and international mobility, and I am eager to support students in their Erasmus journeys. I believe I can contribute actively to the Festival of Solidarity and other events while growing personally and professionally.</p>\\n    <p>Attached you will find my CV and motivation letter for your consideration.</p>\\n    <p>Thank you very much for your time and consideration. I look forward to the possibility of contributing to your team and supporting this meaningful project.</p>\\n    <p>Best regards,<br>\\n    <strong>Wael Slama</strong><br>\\n    📍 Monastir, Tunisia<br>\\n    📧 <a href=\\\\\"mailto:wael.slama.issat@gmail.com\\\\\" style=\\\\\"color:#2563eb;\\\\\">wael.slama.issat@gmail.com</a><br>\\n    📞 +216 54212990<br>\\n    🔗 <a href=\\\\\"https://www.linkedin.com/in/wael-slama-9a194b152/\\\\\" style=\\\\\"color:#2563eb;\\\\\">LinkedIn Profile</a></p>\\n  </body>\\n</html>\"\n}\n\\`\\`\\`\n\n## SOP (Standard Operating Procedure)\n1. Receive the opportunity description.  \n2. Query Pinecone for Wael's relevant background.  \n3. Detect the opportunity type (Volunteering / Work).  \n4. Draft JSON output with Type, Subject, and Body.  \n5. Ensure attachments are mentioned.  \n6. Return only the structured JSON object.\n\n## Final Notes\n- Always adapt the email to the type of opportunity.  \n- Always include Subject + full HTML Body.  \n- Keep it polite, professional, and concise.  \n- Attachments (CV + motivation letter) must always be referenced."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -48
+      ],
+      "id": "eca8a83d-6303-485d-ba54-38f3a8bc4d03",
+      "name": "AI Agent1",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        272
+      ],
+      "id": "13f9b622-2f16-45eb-a083-c42dba7267bc",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fp76UKJB4G8UELf0",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledgeBase",
+        "toolDescription": "=# Overview\nYou are an AI agent responsible for generating professional Gmail emails for Wael Slama. All information must be retrieved dynamically from the Pinecone vector store. You should not rely on static data. Each type of information (personal, education, experience, skills, etc.) should be fetched through a specific tool call.\n\n## Context\n- Wael Slama’s data (personal info, education, work experience, technical skills, certifications, associative activities, projects, interests, etc.) is stored as vector embeddings in Pinecone.  \n- You must query Pinecone whenever you need specific information.  \n- Do not invent or fabricate data. Only use what Pinecone returns.  \n- Input is a text description of the opportunity.  \n- Output is a Gmail draft (subject + body) tailored to the opportunity.  \n\n## Instructions\n1. Receive the input description of the opportunity.  \n2. Call Pinecone tool(s) to retrieve relevant information:  \n   - `Call this tool to access the personal information`  \n   - `Call this tool to access the education information`  \n   - `Call this tool to access the work experience information`  \n   - `Call this tool to access the technical skills information`  \n   - `Call this tool to access the certifications and trainings information`  \n   - `Call this tool to access the projects and initiatives information`  \n   - `Call this tool to access the associative and volunteering experience information`  \n   - `Call this tool to access the hobbies and interests information`  \n3. Select the most relevant pieces based on the opportunity description.  \n4. Draft the Gmail message with:  \n   - **Subject**: Application for [Opportunity Title].  \n   - **Body**:  \n     - Greeting (e.g., “Dear [Organization/Team],”).  \n     - Introduction (Wael’s identity and motivation).  \n     - Relevance (education, experience, skills, or associative engagement).  \n     - Mention attachments (CV + motivation letter).  \n     - Closing (thanks + enthusiasm to contribute).  \n     - Signature (name, location, email, phone, LinkedIn).  \n5. Ensure all content originates from Pinecone queries.  \n6. Return the Gmail draft (subject + body) as plain text.  \n\n## Tools\n- Pinecone Vector Database  \n  - Use targeted queries for each section of the profile.  \n  - Retrieve top-matching vectors based on the opportunity description.  \n\n## Examples\n- Input: \"ESC Volunteering project at Lycée Jean Moulin, Saint Brieuc (FDMJC22 Team).\"  \n  - Query Pinecone for associative experience (Tunisian Scouts, IEEE RAS), youth engagement, academic background.  \n  - Output Gmail draft with subject and professional body mentioning attachments (CV + motivation letter).  \n\n- Input: \"Software Engineer position in Tunisia requiring strong full-stack development experience.\"  \n  - Query Pinecone for education in software engineering, internships in web development, and technical skills.  \n  - Output Gmail draft with subject and professional body highlighting skills, with attachments mentioned.  \n\n## SOP (Standard Operating Procedure)\n1. Read the opportunity description.  \n2. Call Pinecone tool(s) for the relevant sections.  \n3. Select the most relevant details.  \n4. Write the Gmail draft with subject + body in the correct format.  \n5. Verify all details come from Pinecone retrieval.  \n6. Output the Gmail draft as text (ready for Gmail node to send with attachments).  \n\n## Final Notes\n- Always adapt the tone to the type of opportunity (professional, volunteering, academic).  \n- Do not output raw Pinecone responses; integrate them into a natural email.  \n- Always query Pinecone instead of using preloaded static data.  \n- Always mention CV + motivation letter as attachments.  \n---\n",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "demo2",
+          "mode": "list",
+          "cachedResultName": "demo2"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        240
+      ],
+      "id": "a5e30abb-b469-4d07-8240-40a7ad79610b",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "qnlJK8pRJGuewSeU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        240,
+        432
+      ],
+      "id": "b341f30d-8faf-45e0-83ba-7f2637260a26",
+      "name": "Embeddings Google Gemini2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AzhXOaoGcSDrHeTd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        272
+      ],
+      "id": "8d9157bd-d248-457a-bf39-6c3e125914f7",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Information Extractor').item.json.output.Subject }}",
+        "emailType": "html",
+        "message": "={{ $('Information Extractor').item.json.output.Body }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              },
+              {
+                "property": "data1"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1696,
+        -80
+      ],
+      "id": "ea271b85-c194-4fab-b112-f116b4042103",
+      "name": "Create a draft",
+      "webhookId": "071812fb-6092-4521-839c-107618a64c36",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ExFUcLfwkoiEMDLo",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        -32
+      ],
+      "id": "b9a93351-369f-4cb0-a7eb-b6b84c948ed2",
+      "name": "When chat message received",
+      "webhookId": "761d48e1-37fb-4689-84d3-4b294085bb0f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent responsible for generating personalized motivation letters for Wael Slama. All profile information must come exclusively from the Pinecone Vector Store1 tool. You must never ask the user for Wael’s data. The only input from the user is the opportunity description. Each motivation letter must follow a formal structure and be adapted to the opportunity.\n\n## Context\n- Wael Slama’s profile (personal info, education, work experience, technical skills, certifications, associative activities, projects, interests) is embedded in Pinecone Vector Store1.\n- You must always query Pinecone Vector Store1 before drafting a letter.\n- Do not invent or fabricate details. Do not request Wael’s data from the user.\n- Input = text description of the opportunity.\n- Output = full motivation letter in the defined format.\n\n## Instructions\n1. Accept the opportunity description from the user.\n2. Immediately query Pinecone Vector Store1 with the opportunity description.\n3. Retrieve relevant chunks of Wael’s profile (education, work experience, skills, associative activities, etc.).\n4. Use only the retrieved data to draft the motivation letter.\n5. Structure the letter as follows:\n   - **Header**:  \n     Wael Slama  \n     Monastir, Tunisia  \n     📧 wael.slama.issat@gmail.com  \n     📞 +216 54212990  \n     LinkedIn profile (if included in Pinecone results)  \n   - **Recipient**: Organization name + location (from the opportunity description).  \n   - **Subject line**: “Application for [Opportunity Title].”  \n   - **Salutation**: e.g., “Dear [Organization/Team],”  \n   - **Body paragraphs**:  \n     1. Introduction – Wael’s motivation for applying.  \n     2. Education and experience – Studies, internships, projects, skills relevant to the opportunity.  \n     3. Associative/volunteering/community engagement or technical strengths (depending on context).  \n     4. Closing – Adaptability, eagerness to contribute, what Wael hopes to gain.  \n   - **Closing**: Appreciation + “Best regards, Wael Slama.”  \n   - Optionally include LinkedIn at the end.\n6. Adapt the tone:  \n   - Formal for jobs.  \n   - Motivated for volunteering.  \n   - Academic for study programs.  \n7. Ensure all details come from Pinecone results, not assumptions.\n\n## Tools\n- **Pinecone Vector Store1**: The only source for Wael’s profile data. Must be queried for every letter.\n- Text generation model: For composing the final letter.\n\n## Examples\n- Input: \"Software Engineer position in Tunisia requiring strong full-stack development experience.\"  \n  - Query Pinecone Vector Store1 → get Wael’s software engineering education, full-stack internships, technical skills.  \n  - Output: Motivation letter highlighting those details.  \n\n- Input: \"Volunteering program in Europe focused on youth engagement and cultural exchange.\"  \n  - Query Pinecone Vector Store1 → get Wael’s associative experience, teamwork, civic engagement.  \n  - Output: Motivation letter emphasizing volunteering and intercultural activities.  \n\n## SOP (Standard Operating Procedure)\n1. Receive opportunity description.  \n2. Query Pinecone Vector Store1.  \n3. Select relevant profile data.  \n4. Draft the letter in the structured format.  \n5. Verify all details come from Pinecone.  \n6. Output the letter as plain text.  \n\n## Final Notes\n- Never ask the user for Wael’s background information.  \n- Always retrieve from Pinecone Vector Store1 before writing.  \n- Never fabricate details.  \n- Always respect the formal structure.  \n---\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -864,
+        -32
+      ],
+      "id": "8d455a6d-8b2d-4b0f-bcd8-dcf6ab011173",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat-v3.1:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        288
+      ],
+      "id": "93960fdb-fb00-4ca7-afde-85def02b7445",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fp76UKJB4G8UELf0",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledgeBase",
+        "toolDescription": "=# Overview\nYou are an AI agent responsible for generating personalized motivation letters for Wael Slama. All information must be retrieved dynamically from the Pinecone vector store. You should not rely on static data. Each type of information (personal, education, experience, skills, etc.) should be fetched through a specific tool call.\n\n## Context\n- Wael Slama’s data (personal info, education, work experience, technical skills, certifications, associative activities, projects, interests, etc.) is stored as vector embeddings in Pinecone.  \n- You must query Pinecone whenever you need specific information.  \n- Do not invent or fabricate data. Only use what Pinecone returns.  \n- Input is a text description of the opportunity.  \n- Output is a complete motivation letter tailored to the opportunity.  \n\n## Instructions\n1. Receive the input description of the opportunity.  \n2. Call Pinecone tool(s) to retrieve relevant information:  \n   - `Call this tool to access the personal information`  \n   - `Call this tool to access the education information`  \n   - `Call this tool to access the work experience information`  \n   - `Call this tool to access the technical skills information`  \n   - `Call this tool to access the certifications and trainings information`  \n   - `Call this tool to access the projects and initiatives information`  \n   - `Call this tool to access the associative and volunteering experience information`  \n   - `Call this tool to access the hobbies and interests information`  \n3. Select the most relevant pieces based on the opportunity description.  \n4. Draft a structured motivation letter with:  \n   - Introduction (personal info, motivation to apply).  \n   - Body (education, experiences, skills relevant to the opportunity).  \n   - Conclusion (motivation, availability, willingness to contribute).  \n5. Ensure all content originates from Pinecone queries.  \n6. Return the motivation letter as plain text.  \n\n## Tools\n- Pinecone Vector Database  \n  - Use targeted queries for each section of the profile.  \n  - Retrieve top-matching vectors based on the opportunity description.  \n\n## Examples\n- Input: \"Job opportunity in Tunisia for a Software Engineer role\"  \n  - Query Pinecone for education in software engineering, internships in full-stack development, technical skills (React, Node.js, PostgreSQL).  \n  - Output: Motivation letter focused on software engineering competencies.  \n\n- Input: \"Volunteering in Europe for youth engagement projects\"  \n  - Query Pinecone for associative experiences (Tunisian Scouts, IEEE RAS, civic engagement), teamwork, leadership, intercultural activities.  \n  - Output: Motivation letter highlighting community service and cultural exchange.  \n\n## SOP (Standard Operating Procedure)\n1. Read the opportunity description.  \n2. Call Pinecone tool(s) for the relevant sections.  \n3. Filter and select the most relevant details.  \n4. Write the motivation letter in a coherent structure.  \n5. Verify all details come from Pinecone retrieval.  \n6. Output the final letter as text.  \n\n## Final Notes\n- Always adapt the tone to the type of opportunity (professional, volunteering, academic).  \n- Do not output raw Pinecone responses; integrate them into a natural letter.  \n- Always query Pinecone instead of using preloaded static data.  \n---\n",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "demo2",
+          "mode": "list",
+          "cachedResultName": "demo2"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        224
+      ],
+      "id": "272fb93a-6247-43dd-a127-d77f2529e6af",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "qnlJK8pRJGuewSeU",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        448
+      ],
+      "id": "8a32771e-abd0-4d73-b9df-cc7aa66729da",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "AzhXOaoGcSDrHeTd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "18-ObAzGRXUjpg8vhrS1QKXeD5laklVXj",
+        "title": "=wael_slama_motivation_letter_{{ $now }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -32
+      ],
+      "id": "97db8b6d-f4bf-4183-9b56-2a34a9aa60c8",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "xZ5M7HeoSUYi0o91",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('AI Agent').item.json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -32
+      ],
+      "id": "da561a6f-a125-4585-84cf-54492b08997a",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "xZ5M7HeoSUYi0o91",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -848,
+        400
+      ],
+      "id": "53ad4765-aa59-4dda-89d6-cd623d835305",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "18-ObAzGRXUjpg8vhrS1QKXeD5laklVXj",
+          "mode": "list",
+          "cachedResultName": "wael slama",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/18-ObAzGRXUjpg8vhrS1QKXeD5laklVXj"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        -32
+      ],
+      "id": "be907cc7-c6ab-451d-80e2-510785bc76b3",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RqJNoF7eCsW7Xczm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "drawingsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        -32
+      ],
+      "id": "b1adf7df-3016-4196-a3c7-2a25d2ab50df",
+      "name": "Download file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RqJNoF7eCsW7Xczm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Type",
+              "description": "the type of the offer",
+              "required": true
+            },
+            {
+              "name": "Subject",
+              "description": "the sabject of the offer",
+              "required": true
+            },
+            {
+              "name": "Body",
+              "description": "the body",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        -48
+      ],
+      "id": "7c6045f3-8ef8-4fb6-a512-6937d9ddaac1",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        464,
+        160
+      ],
+      "id": "4815342b-bf79-4e69-8776-e8a7500662eb",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fp76UKJB4G8UELf0",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Upload file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data1"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        944,
+        -48
+      ],
+      "id": "35bec3ab-16eb-470f-8024-68ef2b288b27",
+      "name": "download motivation letter",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RqJNoF7eCsW7Xczm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "02853401-edd6-4a17-8f83-6a49014fe8ad",
+              "leftValue": "={{ $json.output.Type }}",
+              "rightValue": "Volunteering",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        -16
+      ],
+      "id": "a1daee8d-f20c-4317-9aea-b7b91e65755d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Information Extractor').item.json.output.Subject }}",
+        "emailType": "html",
+        "message": "={{ $('Information Extractor').item.json.output.Body }}",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "=data"
+              },
+              {
+                "property": "data1"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        128
+      ],
+      "id": "db20d31e-ca2e-49a4-8c63-8d6e6ffd704b",
+      "name": "Create a draft1",
+      "webhookId": "071812fb-6092-4521-839c-107618a64c36",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ExFUcLfwkoiEMDLo",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1jASu2xnpN7IzfuGy9Buh7PBybpqEMuY4",
+          "mode": "list",
+          "cachedResultName": "wael_slama_cv.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1jASu2xnpN7IzfuGy9Buh7PBybpqEMuY4/view?usp=drivesdk"
+        },
+        "options": {
+          "fileName": "cv"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        -128
+      ],
+      "id": "bded9b8f-b85f-4ac0-9b39-050eeb3a6508",
+      "name": "volontaria cv",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RqJNoF7eCsW7Xczm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1LI_QnX6xHZWY4bVHc1RcEOglxZgsDKRu",
+          "mode": "list",
+          "cachedResultName": "cv_wael_slama.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1LI_QnX6xHZWY4bVHc1RcEOglxZgsDKRu/view?usp=drivesdk"
+        },
+        "options": {
+          "fileName": "cv"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1424,
+        160
+      ],
+      "id": "8a27641d-86d2-4c57-83ce-7dc00ac299fb",
+      "name": "work cv",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "RqJNoF7eCsW7Xczm",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When chat message received": [
+      {
+        "json": {
+          "sessionId": "4c485343c12d4599b8b099b74c0f7f9b",
+          "action": "sendMessage",
+          "chatInput": "Association Community\nCentre culturel et social Jacques Brel\n\nAire-sur-la-Lys, France\n\nYou already applied for this opportunity.\nDescription\nWe are looking for volunteers who love creating social interactions, especially with kids. Creativity is a must, as the association focuses on children’s activities. If you enjoy sharing content on social media, this is your chance! Volunteering takes place at the Centre Social of Aire-sur-la-Lys, North France. Our goal is to provide a friendly environment for children, promoting inclusivity, solidarity, and human dignity. We seek volunteers interested in media (social media, photography, video, digital tools) to share these skills with children through educational workshops. Volunteers will create events, posts, videos, and communicate our mission to the public, taking part in local festivals and gatherings.\n\nAccommodation, food and transport arrangements\nThe volunteer will stay in a shared apartment located only 500 meters from the organisation, making it easy to reach by foot. The apartment includes: two bedrooms (the volunteer will have their own private bedroom), a bathroom, a fully equipped kitchen, and a comfortable living room. Currently, the apartment is occasionally used by a staff member 1–2 nights per week, but solutions can be arranged to ensure the volunteer has full privacy if needed during the stay. The private bedroom for the volunteer includes a bed and wardrobes for storage. A mountain bike (VTT) will be available.\n\nParticipant profile\nVOLUNTEER PROFILE Between 18 and 30 years old Sociable, patient with the kids willing to improve or learn French, since it is the main language for communicating Creative and able to use social medias autonomously AS A VOLUNTEER YOU WILL HAVE TO: Create events related to kids animation Create posts, reels, videos in order to share the values of our association talk to a various public about our mission take part in local events, such as festivals, public gatherings sharing your experience and also your culture WHAT YOU WILL RECEIVE Health Insurance: You will be covered by the ESC program insurance, and we recommend obtaining a European Health Insurance Card before departure. Youthpass Certificate: At the end of your experience, you will receive a Youthpass, recognizing your non-formal learning and engagement Financial Support"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Download file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file2": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "download motivation letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download motivation letter": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "volontaria cv",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "work cv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "volontaria cv": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "work cv": {
+      "main": [
+        [
+          {
+            "node": "Create a draft1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d38a21e2-38bc-4588-9968-74e4c2bcc456",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58b9bae21ac9faf5bc46c7212eb397176823ae4b902c568abd0c2b680e807efd"
+  },
+  "id": "ugyTZt0vIVsPeq3y",
+  "tags": []
+}

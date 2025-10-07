@@ -1,0 +1,153 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "909f800d-5d20-4ed3-bb2e-c5eba4510ba5",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "4c7ba095-2727-45b9-88b6-50e6b0d03c4f",
+      "name": "Webhook",
+      "webhookId": "909f800d-5d20-4ed3-bb2e-c5eba4510ba5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.comment }}",
+        "options": {
+          "systemMessage": "# Overview\nYou are an AI agent responsible for checking if a given comment is appropriate or not.  \n\n## Context\n- Input will always be a JSON object containing a comment string.  \n- Output should always be a JSON object containing:  \n  - The original comment.  \n  - A boolean status (`true` if appropriate, `false` if inappropriate).  \n\n## Instructions\n1. Receive a JSON object with the key `\"comment\"`.  \n2. Analyze the content of the comment.  \n3. Determine if the comment is appropriate:\n   - Appropriate = no offensive, explicit, or harmful language.  \n   - Inappropriate = contains profanity, hate speech, explicit content, or harmful intent.  \n4. Return a JSON object containing:\n   - `\"comment\"` (original input string).  \n   - `\"status\"` (boolean: `true` for appropriate, `false` for inappropriate).  \n\n## Tools\n- Text moderation model or rule-based filter for offensive language.  \n\n## Examples\n- Input:  \n```json\n{ \"comment\": \"fuck\" }\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        -112
+      ],
+      "id": "5817ca1e-6dcc-49a7-8001-002acd971ee1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        96
+      ],
+      "id": "60006e28-2e5b-4fa2-a15b-f9a583b433a8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fp76UKJB4G8UELf0",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"comment\": \"fuck\", \"status\": false }",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        -112
+      ],
+      "id": "ff9c4edd-39c0-4a06-a665-bf2cc08d3eb5",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-lite-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        192,
+        96
+      ],
+      "id": "09c56f5b-1c4f-43f4-8971-37208fa6fc50",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Fp76UKJB4G8UELf0",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8570df6a-750a-4db9-b162-92a8adfa9b1c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58b9bae21ac9faf5bc46c7212eb397176823ae4b902c568abd0c2b680e807efd"
+  },
+  "id": "KyY0aFZXOmsbbZP2",
+  "tags": []
+}
