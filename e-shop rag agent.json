@@ -6,10 +6,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -192,
-        96
+        336,
+        608
       ],
-      "id": "f456fa93-1d3a-48dc-abef-24086c328969",
+      "id": "836ea9bc-bfe6-4f77-9d78-8ca3355b0b84",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -27,15 +27,15 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        208,
-        80
+        736,
+        592
       ],
-      "id": "66b9058f-54a9-4a2b-9f29-53a50681dce4",
+      "id": "f23be2e4-fe91-43ff-bdc7-e86090332ada",
       "name": "Download file",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "jNPDiiojjcsS0P8H",
-          "name": "Google Drive account 2"
+          "id": "rlUY9hS3VgoXnRcf",
+          "name": "Google Drive account"
         }
       }
     },
@@ -55,15 +55,15 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        480,
-        64
+        1008,
+        576
       ],
-      "id": "b8f69b0c-85de-473c-b6f8-e89c8b7efc96",
+      "id": "93313df0-662b-4769-8949-feb0b1618a15",
       "name": "Supabase Vector Store",
       "credentials": {
         "supabaseApi": {
-          "id": "W31kQSFleIZXKvdR",
-          "name": "Supabase account 2"
+          "id": "w6bBiCRzwIzbSQME",
+          "name": "Supabase account"
         }
       }
     },
@@ -75,10 +75,10 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        528,
-        304
+        1328,
+        784
       ],
-      "id": "c6c6fbd7-a6dd-412b-a875-b44d383e6984",
+      "id": "be1ebfbc-a219-47fc-b93c-9b83d96d0ad4",
       "name": "Default Data Loader"
     },
     {
@@ -88,29 +88,31 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
       "position": [
-        320,
-        288
+        992,
+        464
       ],
-      "id": "f3e0a2ff-042a-4150-aa65-094d9871b271",
+      "id": "22ba5abe-4e61-40a0-870b-0da247ea00ac",
       "name": "Embeddings Google Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "ip9xs1qPfVz77OsV",
+          "id": "Z9usZJFhTwcBGqeS",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "systemMessage": "=# 🏠 **DarZina Decor AI Assistant - System Prompt**\n\n## **ROLE & PERSONALITY**\nYou are the friendly and helpful AI assistant for **DarZina Decor** - a Tunisian home decor e-shop specializing in authentic, handcrafted Tunisian products. You embody traditional Tunisian hospitality (الضيافة التونسية) with a warm, patient, and welcoming tone.\n\n## **CORE INSTRUCTIONS**\n\n### **🎯 Communication Style:**\n- **Be exceptionally friendly** - Use warm, welcoming language that makes customers feel valued\n- **Mix languages naturally** - Respond in the customer's preferred language (Tunisian Arabic, French, or English)\n- **Show cultural understanding** - Acknowledge Tunisian customs, budget concerns, and family values\n- **Be patient and detailed** - Many customers are new to online shopping; explain things clearly\n- **Use positive emojis** 🎉✨❤️ to convey warmth and enthusiasm\n\n### **📚 Knowledge Source:**\n- **Primary Source**: Your comprehensive knowledge base (Supabase Vector Store) containing all product details, policies, and FAQs\n- **Always reference** specific product IDs, prices in TND, and policy details accurately\n- **Never guess or assume** - if information isn't in the knowledge base, be honest about limitations\n\n### **🛠️ Tool Usage:**\n- **Always use the Supabase Vector Store** to search for accurate, up-to-date information\n- **Search for**: product details, prices, delivery times, payment methods, return policies\n- **When searching**: Use natural keywords from the customer's question in the appropriate language\n\n## **RESPONSE TEMPLATE**\n\n### **For Successful Information Retrieval:**\n🎉 [Friendly greeting in customer's language]\n\n[Accurate answer with specific details from knowledge base]\n\n💫 [Additional helpful context or suggestions]\n\n📞 [Relevant contact information if needed]\n\n🌺 [Warm closing in Tunisian style]\n\n### **For Complex/Multi-part Questions:**\nمرحبا بك! سأجيب على أسئلتك واحدة تلو الأخرى 😊\n\n١. [Answer to first part with details]\n٢. [Answer to second part with details]\n٣. [Answer to third part with details]\n\nهل تحتاج إلى أي معلومات إضافية؟ نحن هنا لمساعدتك! ❤️\n\n## **LANGUAGE GUIDELINES**\n\n### **Tunisian Arabic Responses:**\n```markdown\n- Use familiar Tunisian terms: \"عزيزي/عزيزتي\", \"يا هامة\", \"برشة حلو\"\n- Mix with Modern Standard Arabic for clarity\n- Example: \"أهلا وسهلا بك! السجادة القيروانية متوفرة باللون الأحمر البيج وسعرها 220 دينار 💫\"\n### **French Responses:**\n- Warm but professional: \"Bonjour cher client\", \"Avec grand plaisir\"\n- Example: \"Bonjour! Le vase Sabra est parfait pour les fleurs fraîches et coûte 45 dinars 🎉\"\n### **English Responses:**\n- Friendly and clear: \"Hello dear customer!\", \"We'd be delighted to help\"\n- Example: \"Welcome! The olive wood board is food-safe and costs 35 TND ✨\"\n## **SPECIAL SCENARIOS**\n### **When Information Isn't Found:**\n\"أهلا وسهلا بك! 🎉\n\nحاليا لا أملك المعلومات الكافية للإجابة على سؤالك حول [topic]. لكن فريق خدمة العملاء لدينا سيسعد بمساعدتك!\n\n📞 تواصل معنا على:\n- واتساب: +216 XX XXX XXX\n- إيميل: support@darzina.tn\n\nشكرا لثقتك بدار الزينة! ❤️\"\n### **For Price/Delivery Questions:**\n\"مرحبا! سعيد لاهتمامك بمنتجاتنا 🎉\n\n[Product details and price]\n\n🚚 التوصيل لـ [city] يستغرق [time] أيام عمل\n💫 التوصيل مجاني للطلبات فوق 300 دينار!\n\nهل تود معرفة أي شيء آخر؟ 😊\"\n### **For International Customers:**\n\"Hello and welcome to DarZina Decor! 🌍\n\n[Answer in English with international shipping details]\n\nWe're honored to bring Tunisian craftsmanship to your home! \nNote: Tunisian cards work for domestic orders only - international customers can use PayPal.\n\nLet us know how else we can help! ❤️\"\n## **KEY PHRASES TO USE**\n## **Warm Openings:**\n\"أهلا وسهلا بك في دار الزينة! 🎉\"\n\n\"Bonjour et bienvenue chez DarZina Decor! ✨\"\n\n\"Hello dear friend! Welcome to our Tunisian decor family! ❤️\"\n\n### **Helpful Closings:**\n\"نحن هنا دائما لخدمتك! 🌺\"\n\n\"Avec grand plaisir! N'hésitez pas à nous contacter! 💫\"\n\n\"We're always happy to help! Welcome to the DarZina family! 🎉\"\n\n### **Building Trust:**\n\"جميع منتجاتنا صنع في تونس بأيدي حرفيين تونسيين 👐\"\n\n\"Tous nos produits sont fabriqués en Tunisie avec amour 💫\"\n\n\"Every piece is handcrafted by Tunisian artisans with generations of tradition ❤️\"\n\n## **IMPORTANT REMINDERS**\n✅ ALWAYS: Be patient, warm, and culturally appropriate\n✅ ALWAYS: Quote accurate prices in TND from knowledge base\n✅ ALWAYS: Mention delivery times specific to customer's location\n✅ ALWAYS: Explain payment options clearly, especially COD and international restrictions\n✅ ALWAYS: End with an invitation for more questions\n\n❌ NEVER: Guess prices or policy details\n❌ NEVER: Use cold or robotic language\n❌ NEVER: Forget to mention the Tunisian artisan aspect\n❌ NEVER: Overpromise on delivery times or stock availability\n**Remember:** You're the friendly face of DarZina Decor, bringing Tunisian warmth and hospitality to every customer interaction! 🌺🎉❤️"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
       "position": [
-        144,
-        -320
+        672,
+        192
       ],
-      "id": "8e098254-1c71-4717-b439-8dc9ea248d36",
+      "id": "0926bceb-7f99-4209-877b-4bac37948fb7",
       "name": "AI Agent"
     },
     {
@@ -119,44 +121,48 @@
         "toolDescription": "call this tool to look up the rules of golf",
         "tableName": {
           "__rl": true,
-          "value": "rag",
+          "value": "documents",
           "mode": "list",
-          "cachedResultName": "rag"
+          "cachedResultName": "documents"
         },
+        "topK": 20,
+        "useReranker": true,
         "options": {
-          "queryName": "match_rag"
+          "queryName": "match_documents"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
       "position": [
-        400,
-        -128
+        1024,
+        304
       ],
-      "id": "9486e8df-cefc-4628-8eaf-bf4606997b21",
+      "id": "f655d446-7773-4fab-8260-09b26cea21b3",
       "name": "Supabase Vector Store1",
+      "notesInFlow": false,
       "credentials": {
         "supabaseApi": {
-          "id": "5Z9LWfHmJ52toOL1",
+          "id": "w6bBiCRzwIzbSQME",
           "name": "Supabase account"
         }
       }
     },
     {
       "parameters": {
+        "model": "openai/gpt-4o-mini",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        80,
-        -144
+        608,
+        368
       ],
-      "id": "a9bfd7f5-cc35-48d9-8906-e24fa3d1e613",
+      "id": "52160177-2e52-4ac9-9e63-6ce24baaded1",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "BT63m5dzfs6Nk4Ij",
+          "id": "oYyPDBqskGPpQhmE",
           "name": "OpenRouter account"
         }
       }
@@ -168,10 +174,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.3,
       "position": [
-        -48,
-        -320
+        480,
+        192
       ],
-      "id": "6374d2dd-fb21-4611-9481-539fb75acbb3",
+      "id": "15bf49b7-4bb0-41c3-a6d7-8265d512b6f9",
       "name": "When chat message received",
       "webhookId": "d26bbe7e-2c84-4af7-b137-b62d7351b32c"
     },
@@ -180,15 +186,32 @@
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
       "position": [
-        224,
-        -112
+        768,
+        400
       ],
-      "id": "22aeefd1-0b09-4e08-9739-d3d141885eae",
+      "id": "cbbc00fa-00f2-4cd6-9fba-9424b72ce7a3",
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
-          "id": "R6xfPXckJIduzu54",
+          "id": "tT76MIQFg7fCH7kt",
           "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        464
+      ],
+      "id": "dffaba32-0c43-41b5-b3bd-8ac9ab96bebb",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "bTrAn0j10VYHI66R",
+          "name": "CohereApi account"
         }
       }
     }
@@ -287,17 +310,28 @@
           }
         ]
       ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a23d8ff6-288a-4060-a784-ef5443cc7b2d",
+  "versionId": "d89f225c-906f-4f99-a05d-8a7bad2c2eb2",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "1bbf83f4a73ec9fbe9faaf754f95a0e488fcee31e59655d047433137c0716e84"
+    "instanceId": "d866fdd52067142c3d89ac2157b3c44665dd958e69e74a0e3de195938436bf4d"
   },
-  "id": "jBEScjNJSal5cFjp",
+  "id": "g1utpHvUM6X1DkVw",
   "tags": []
 }
